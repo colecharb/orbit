@@ -11,7 +11,7 @@ export function Toolbar({ tool, onToolChange, onClear }: ToolbarProps) {
     <div className="flex gap-2">
       <button
         onClick={() => onToolChange("draw")}
-        className={`px-4 py-2 rounded border transition-colors ${
+        className={`px-4 py-2 corner-squircle rounded-2xl border transition-colors ${
           tool === "draw"
             ? "bg-foreground text-background"
             : "bg-background text-foreground border-foreground/30 hover:bg-foreground/10"
@@ -21,7 +21,7 @@ export function Toolbar({ tool, onToolChange, onClear }: ToolbarProps) {
       </button>
       <button
         onClick={() => onToolChange("erase")}
-        className={`px-4 py-2 rounded border transition-colors ${
+        className={`px-4 py-2 corner-squircle rounded-2xl border transition-colors ${
           tool === "erase"
             ? "bg-foreground text-background"
             : "bg-background text-foreground border-foreground/30 hover:bg-foreground/10"
@@ -31,7 +31,7 @@ export function Toolbar({ tool, onToolChange, onClear }: ToolbarProps) {
       </button>
       <button
         onClick={onClear}
-        className="px-4 py-2 rounded border border-foreground/30 bg-background text-foreground hover:bg-foreground/10 transition-colors"
+        className="px-4 py-2 corner-squircle rounded-2xl border border-foreground/30 bg-background text-foreground hover:bg-foreground/10 transition-colors"
       >
         Clear
       </button>
