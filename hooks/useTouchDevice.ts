@@ -5,10 +5,8 @@ export function useTouchDevice(): boolean {
 
   useEffect(() => {
     const hasTouchSupport =
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0 ||
-      (navigator as Navigator & { msMaxTouchPoints?: number })
-        .msMaxTouchPoints > 0;
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsTouchDevice(hasTouchSupport);
   }, []);
 
