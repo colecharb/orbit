@@ -6,6 +6,7 @@ import {
   useResponsiveCanvasSize,
   useLockScroll,
   useDrawingCanvas,
+  useTouchDevice,
 } from "@/hooks";
 import type { Tool } from "@/lib/types";
 import { Toolbar } from "./Toolbar";
@@ -14,6 +15,7 @@ import { GRID_SIZE } from "@/lib/constants";
 
 export function DrawingApp() {
   const [tool, setTool] = useState<Tool>("draw");
+  const isTouchDevice = useTouchDevice();
   const isDarkMode = useDarkMode();
   const canvasDisplaySize = useResponsiveCanvasSize();
 
@@ -30,8 +32,6 @@ export function DrawingApp() {
       <h1 className="text-2xl font-bold">Orbit</h1>
       <h2>{`${GRID_SIZE} × ${GRID_SIZE} Pixels`}</h2>
 
-      <Toolbar tool={tool} onToolChange={setTool} onClear={clear} />
-
       <DrawingCanvas
         canvasRef={canvasRef}
         displaySize={canvasDisplaySize}
@@ -41,8 +41,10 @@ export function DrawingApp() {
       />
 
       <p className="text-sm text-foreground/60">
-        Click and drag to {tool}. Current tool: <strong>{tool}</strong>
+        {isTouchDevice ? "Press" : "Click"} and drag to {tool}.
       </p>
+
+      <Toolbar tool={tool} onToolChange={setTool} onClear={clear} />
     </div>
   );
 }
