@@ -7,6 +7,7 @@ import {
   useLockScroll,
   useDrawingCanvas,
   useTouchDevice,
+  useToolKeyboardShortcuts,
 } from "@/hooks";
 import type { Tool } from "@/lib/types";
 import { Toolbar } from "./Toolbar";
@@ -20,6 +21,7 @@ export function DrawingApp() {
   const canvasDisplaySize = useResponsiveCanvasSize();
 
   useLockScroll();
+  useToolKeyboardShortcuts(setTool);
 
   const { canvasRef, handleMouseDown, handleTouchStart, clear } =
     useDrawingCanvas({
