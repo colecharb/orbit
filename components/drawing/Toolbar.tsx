@@ -19,6 +19,7 @@ export function Toolbar({ tool, onToolChange, onClear }: ToolbarProps) {
       >
         Draw
       </button>
+
       <button
         onClick={() => onToolChange("erase")}
         className={`px-4 py-2 corner-squircle rounded-2xl border transition-colors ${
@@ -29,9 +30,10 @@ export function Toolbar({ tool, onToolChange, onClear }: ToolbarProps) {
       >
         Erase
       </button>
+
       <button
         onClick={onClear}
-        className="px-4 py-2 corner-squircle rounded-2xl border border-foreground/30 bg-background text-foreground hover:bg-foreground/10 transition-colors"
+        className="px-4 py-2 corner-squircle rounded-2xl border border-red-300/50 bg-background text-red-300 hover:bg-red-300/10 transition-colors"
       >
         Clear
       </button>
