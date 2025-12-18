@@ -1,5 +1,10 @@
 import { useRef, useCallback, useEffect } from "react";
-import { GRID_SIZE, BASE_CELL_SIZE, BASE_CANVAS_SIZE, COLORS } from "@/lib/constants";
+import {
+  GRID_SIZE,
+  BASE_CELL_SIZE,
+  BASE_CANVAS_SIZE,
+  COLORS,
+} from "@/lib/constants";
 import { getLinePoints } from "@/lib/bresenham";
 import type { Tool, Cell } from "@/lib/types";
 
@@ -75,7 +80,7 @@ export function useDrawingCanvas({
             col * BASE_CELL_SIZE,
             row * BASE_CELL_SIZE,
             BASE_CELL_SIZE,
-            BASE_CELL_SIZE
+            BASE_CELL_SIZE,
           );
         }
       }
@@ -86,6 +91,17 @@ export function useDrawingCanvas({
   useEffect(() => {
     renderGrid();
   }, [renderGrid]);
+
+  // Expand a cell to a 3x3 brush area
+  const expandToBrush = useCallback((cell: Cell): Cell[] => {
+    const cells: Cell[] = [];
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        cells.push({ row: cell.row + dr, col: cell.col + dc });
+      }
+    }
+    return cells;
+  }, []);
 
   // Fill cells and update canvas efficiently
   const fillCells = useCallback(
@@ -99,21 +115,26 @@ export function useDrawingCanvas({
       const { bgColor, fgColor } = getColors();
       const isDraw = toolRef.current === "draw";
 
+      // Expand to 3x3 brush for eraser
+      const cellsToFill = isDraw
+        ? cells
+        : cells.flatMap((cell) => expandToBrush(cell));
+
       ctx.fillStyle = isDraw ? fgColor : bgColor;
 
-      for (const { row, col } of cells) {
+      for (const { row, col } of cellsToFill) {
         if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
           gridRef.current[row][col] = isDraw;
           ctx.fillRect(
             col * BASE_CELL_SIZE,
             row * BASE_CELL_SIZE,
             BASE_CELL_SIZE,
-            BASE_CELL_SIZE
+            BASE_CELL_SIZE,
           );
         }
       }
     },
-    [getColors]
+    [getColors, expandToBrush],
   );
 
   // Convert client coordinates to grid cell
@@ -137,7 +158,7 @@ export function useDrawingCanvas({
       }
       return null;
     },
-    []
+    [],
   );
 
   // Handle start of drawing (mouse or touch)
@@ -150,7 +171,7 @@ export function useDrawingCanvas({
         fillCells([cell]);
       }
     },
-    [getCellFromCoords, fillCells]
+    [getCellFromCoords, fillCells],
   );
 
   // Handle move while drawing (mouse or touch)
@@ -170,7 +191,7 @@ export function useDrawingCanvas({
         lastCellRef.current = cell;
       }
     },
-    [getCellFromCoords, fillCells]
+    [getCellFromCoords, fillCells],
   );
 
   // Handle end of drawing
@@ -184,14 +205,14 @@ export function useDrawingCanvas({
     (e: React.MouseEvent) => {
       handleStart(e.clientX, e.clientY);
     },
-    [handleStart]
+    [handleStart],
   );
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       handleMove(e.clientX, e.clientY);
     },
-    [handleMove]
+    [handleMove],
   );
 
   // Touch event handlers
@@ -203,7 +224,7 @@ export function useDrawingCanvas({
         handleStart(touch.clientX, touch.clientY);
       }
     },
-    [handleStart]
+    [handleStart],
   );
 
   const handleTouchMove = useCallback(
@@ -214,7 +235,7 @@ export function useDrawingCanvas({
         handleMove(touch.clientX, touch.clientY);
       }
     },
-    [handleMove]
+    [handleMove],
   );
 
   const handleTouchEnd = useCallback(
@@ -222,7 +243,7 @@ export function useDrawingCanvas({
       e.preventDefault();
       handleEnd();
     },
-    [handleEnd]
+    [handleEnd],
   );
 
   // Clear the canvas
@@ -245,7 +266,9 @@ export function useDrawingCanvas({
     if (canvas) {
       canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
       canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
-      canvas.addEventListener("touchcancel", handleTouchEnd, { passive: false });
+      canvas.addEventListener("touchcancel", handleTouchEnd, {
+        passive: false,
+      });
     }
 
     return () => {
