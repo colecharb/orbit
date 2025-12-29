@@ -108,7 +108,13 @@ export function DrawingApp() {
       </h2>
 
       <div className="relative w-full max-w-2xl aspect-square">
-        <div className="absolute inset-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            zIndex: viewMode === "2d" ? 10 : 0,
+            pointerEvents: viewMode === "2d" ? "auto" : "none",
+          }}
+        >
           <DrawingCanvas
             canvasRef={canvasRef}
             displaySize={canvasDisplaySize}
@@ -118,8 +124,14 @@ export function DrawingApp() {
           />
         </div>
 
-        {meshUrl && (viewMode === "3d" || viewMode === "sketch") && (
-          <div className="bg-background absolute inset-0">
+        {meshUrl && (
+          <div
+            className="bg-background absolute inset-0"
+            style={{
+              zIndex: viewMode === "3d" || viewMode === "sketch" ? 10 : 0,
+              pointerEvents: viewMode === "3d" || viewMode === "sketch" ? "auto" : "none",
+            }}
+          >
             <UnifiedMeshViewer
               meshUrl={meshUrl}
               mode={viewMode === "3d" ? "full" : "sketch"}
