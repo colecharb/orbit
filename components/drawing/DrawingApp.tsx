@@ -23,6 +23,7 @@ export function DrawingApp() {
   const [viewMode, setViewMode] = useState<ViewMode>("2d");
   const hasAutoSwitchedRef = useRef(false);
   const last3DModeRef = useRef<"3d" | "sketch">("3d");
+  const sketchViewerCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const isTouchDevice = useTouchDevice();
   const isDarkMode = useDarkMode();
   const canvasDisplaySize = useResponsiveCanvasSize();
@@ -75,6 +76,32 @@ export function DrawingApp() {
     setViewMode("sketch");
   };
 
+  const handleCopyToCanvas = () => {
+    if (!canvasRef.current || !sketchViewerCanvasRef.current) return;
+
+    const ctx = canvasRef.current.getContext("2d");
+    if (!ctx) return;
+
+    // Fill with background color first
+    const bgColor = isDarkMode ? "#0a0a0a" : "#ffffff";
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+    // Draw the WebGL canvas (128x128) onto the 2D canvas (512x512)
+    // This will scale it up 4x with pixelated rendering
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(
+      sketchViewerCanvasRef.current,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+
+    // Switch back to canvas view to see the result
+    setViewMode("2d");
+  };
+
   // Reset auto-switch flag when a new conversion starts
   useEffect(() => {
     if (conversionStatus === "converting") {
@@ -125,20 +152,37 @@ export function DrawingApp() {
         </div>
 
         {meshUrl && (
-          <div
-            className="bg-background absolute inset-0"
-            style={{
-              zIndex: viewMode === "3d" || viewMode === "sketch" ? 10 : 0,
-              pointerEvents: viewMode === "3d" || viewMode === "sketch" ? "auto" : "none",
-            }}
-          >
-            <UnifiedMeshViewer
-              meshUrl={meshUrl}
-              mode={viewMode === "3d" ? "full" : "sketch"}
-              displaySize={canvasDisplaySize}
-              isDarkMode={isDarkMode}
-            />
-          </div>
+          <>
+            <div
+              className="bg-background absolute inset-0"
+              style={{
+                zIndex: viewMode === "3d" ? 10 : 0,
+                pointerEvents: viewMode === "3d" ? "auto" : "none",
+              }}
+            >
+              <UnifiedMeshViewer
+                meshUrl={meshUrl}
+                mode="full"
+                displaySize={canvasDisplaySize}
+                isDarkMode={isDarkMode}
+              />
+            </div>
+            <div
+              className="bg-background absolute inset-0"
+              style={{
+                zIndex: viewMode === "sketch" ? 10 : 0,
+                pointerEvents: viewMode === "sketch" ? "auto" : "none",
+              }}
+            >
+              <UnifiedMeshViewer
+                meshUrl={meshUrl}
+                mode="sketch"
+                displaySize={canvasDisplaySize}
+                isDarkMode={isDarkMode}
+                canvasRef={sketchViewerCanvasRef}
+              />
+            </div>
+          </>
         )}
 
         {conversionStatus === "converting" && (
@@ -182,6 +226,7 @@ export function DrawingApp() {
         onToggleTo3D={handleToggleTo3D}
         onView3D={handleView3D}
         onViewSketch={handleViewSketch}
+        onCopyToCanvas={handleCopyToCanvas}
         isConverting={conversionStatus === "converting"}
         hasMesh={!!meshUrl}
       />

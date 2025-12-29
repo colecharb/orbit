@@ -11,6 +11,7 @@ interface UnifiedMeshViewerProps {
   mode: 'full' | 'sketch';
   displaySize?: number;
   isDarkMode?: boolean;
+  canvasRef?: React.RefObject<HTMLCanvasElement | null>;
 }
 
 function ContextMonitor() {
@@ -40,7 +41,7 @@ function ContextMonitor() {
   return null;
 }
 
-function CanvasSizeController({ mode }: { mode: 'full' | 'sketch' }) {
+function CanvasSizeController({ mode, isDarkMode }: { mode: 'full' | 'sketch'; isDarkMode: boolean }) {
   const { gl, size } = useThree();
 
   useEffect(() => {
@@ -49,12 +50,18 @@ function CanvasSizeController({ mode }: { mode: 'full' | 'sketch' }) {
       gl.domElement.width = GRID_SIZE;
       gl.domElement.height = GRID_SIZE;
       gl.setViewport(0, 0, GRID_SIZE, GRID_SIZE);
+
+      // Set clear color for sketch mode
+      const bgColor = isDarkMode ? COLORS.dark.background : COLORS.light.background;
+      const color = new THREE.Color(bgColor);
+      gl.setClearColor(color, 1);
     } else {
       // Reset to normal size based on container
       gl.setSize(size.width, size.height, false);
       gl.setViewport(0, 0, size.width, size.height);
+      gl.setClearColor(0x000000, 0); // Transparent for 3D mode
     }
-  }, [mode, gl, size]);
+  }, [mode, gl, size, isDarkMode]);
 
   return null;
 }
@@ -167,7 +174,7 @@ function LoadingFallback() {
   );
 }
 
-export function UnifiedMeshViewer({ meshUrl, mode, displaySize, isDarkMode = false }: UnifiedMeshViewerProps) {
+export function UnifiedMeshViewer({ meshUrl, mode, displaySize, isDarkMode = false, canvasRef: externalCanvasRef }: UnifiedMeshViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasSize = displaySize || BASE_CANVAS_SIZE;
   const isSketchMode = mode === 'sketch';
@@ -199,13 +206,18 @@ export function UnifiedMeshViewer({ meshUrl, mode, displaySize, isDarkMode = fal
           }}
           dpr={isSketchMode ? 1 : [1, 2]}
           gl={{
-            preserveDrawingBuffer: false,
+            preserveDrawingBuffer: true,
             antialias: false,
             powerPreference: 'high-performance',
           }}
+          onCreated={({ gl }) => {
+            if (externalCanvasRef) {
+              externalCanvasRef.current = gl.domElement;
+            }
+          }}
         >
         <ContextMonitor />
-        <CanvasSizeController mode={mode} />
+        <CanvasSizeController mode={mode} isDarkMode={isDarkMode} />
 
         {!isSketchMode && (
           <>

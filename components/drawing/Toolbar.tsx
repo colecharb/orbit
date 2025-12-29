@@ -12,6 +12,7 @@ interface ToolbarProps {
   onToggleTo3D: () => void;
   onView3D: () => void;
   onViewSketch: () => void;
+  onCopyToCanvas: () => void;
   isConverting: boolean;
   hasMesh: boolean;
 }
@@ -26,6 +27,7 @@ export function Toolbar({
   onToggleTo3D,
   onView3D,
   onViewSketch,
+  onCopyToCanvas,
   isConverting,
   hasMesh,
 }: ToolbarProps) {
@@ -43,7 +45,7 @@ export function Toolbar({
               : "bg-background text-foreground border-foreground/30 hover:bg-foreground/10"
           }`}
         >
-          2D
+          Canvas
         </button>
 
         <button
@@ -55,7 +57,7 @@ export function Toolbar({
               : "bg-background text-foreground border-foreground/30 hover:bg-foreground/10"
           } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          3D
+          Orbit
         </button>
       </div>
 
@@ -125,6 +127,15 @@ export function Toolbar({
             >
               Sketch
             </button>
+
+            {viewMode === "sketch" && (
+              <button
+                onClick={onCopyToCanvas}
+                className="px-4 py-2 corner-squircle rounded-2xl border border-green-300/50 bg-background text-green-300 hover:bg-green-300/10 transition-colors"
+              >
+                Copy to Canvas
+              </button>
+            )}
           </>
         )}
       </div>
