@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
  */
 export function useDarkMode(): boolean {
   const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Only check on client-side
     if (typeof window !== "undefined") {
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
@@ -14,7 +15,9 @@ export function useDarkMode(): boolean {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+    const handler = (e: MediaQueryListEvent) => {
+      setIsDarkMode(e.matches);
+    };
 
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);

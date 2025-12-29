@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ML Service
+ml-service/data/
+ml-service/sketch2mesh/
+ml-service/__pycache__/
+ml-service/**/__pycache__/
+ml-service/.venv/
+ml-service/venv/
+ml-service/**/*.pyc
+*.pyc
+__pycache__/
+
+# Docker
+docker-compose.override.yml

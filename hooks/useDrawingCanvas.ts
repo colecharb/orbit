@@ -66,6 +66,11 @@ export function useDrawingCanvas({
 
     const { bgColor, fgColor } = getColors();
 
+    // Reset context state to ensure clean rendering
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1.0;
+
     // Clear with background color
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, BASE_CANVAS_SIZE, BASE_CANVAS_SIZE);
@@ -85,6 +90,8 @@ export function useDrawingCanvas({
         }
       }
     }
+
+    ctx.restore();
   }, [getColors]);
 
   // Re-render when dark mode changes
@@ -120,6 +127,9 @@ export function useDrawingCanvas({
         ? cells
         : cells.flatMap((cell) => expandToBrush(cell));
 
+      // Reset context state before drawing
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1.0;
       ctx.fillStyle = isDraw ? fgColor : bgColor;
 
       for (const { row, col } of cellsToFill) {

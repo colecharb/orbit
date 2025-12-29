@@ -19,19 +19,21 @@ export function DrawingCanvas({
   onTouchStart,
 }: DrawingCanvasProps) {
   return (
-    <canvas
-      ref={canvasRef}
-      width={BASE_CANVAS_SIZE}
-      height={BASE_CANVAS_SIZE}
-      onMouseDown={onMouseDown}
-      onTouchStart={onTouchStart}
-      className="border border-foreground/30 select-none touch-none"
-      style={{
-        width: displaySize,
-        height: displaySize,
-        cursor: tool === "draw" ? "crosshair" : "cell",
-        imageRendering: "pixelated",
-      }}
-    />
+    <div className="w-full h-full flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        width={BASE_CANVAS_SIZE}
+        height={BASE_CANVAS_SIZE}
+        onMouseDown={onMouseDown}
+        onTouchStart={onTouchStart}
+        className="border border-foreground/30 select-none touch-none"
+        style={{
+          width: displaySize,
+          height: displaySize,
+          cursor: tool === "draw" ? "crosshair" : "cell",
+          imageRendering: "pixelated",
+        }}
+      />
+    </div>
   );
 }

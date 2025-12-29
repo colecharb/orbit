@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+data/
+sketch2mesh/
+.git
+.gitignore
+*.md
+.env
+.DS_Store
+*.log
